@@ -16,4 +16,7 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/categories', 'CategoryController.index')
+Route.group(()=>{
+    Route.get('categories', 'CategoryController.index')
+    Route.post('category', 'CategoryController.store')  
+}).prefix('api/v1')

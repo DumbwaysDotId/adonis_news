@@ -1,29 +1,11 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
 const Category = use('App/Models/Category')
+const { validate } = use('Validator')
 
-/**
- * Resourceful controller for interacting with categories
- */
 class CategoryController {
-  /**
-   * Show a list of all categories.
-   * GET categories
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+
   async index ({ request, response, view }) {
-    // const categories = [
-    //   {id: 1, title: "Sport"},
-    //   {id: 2, title: "Finance"},
-    // ]
     const categories = await Category.all()
 
     return {
@@ -31,74 +13,28 @@ class CategoryController {
     }
   }
 
-  /**
-   * Render a form to be used for creating a new category.
-   * GET categories/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
+  async store ({ request }){
+    const rules = {
+      title: 'required'
+    }
 
-  /**
-   * Create/save a new category.
-   * POST categories
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
-  }
+    const validation = await validate(request.all(), rules)
 
-  /**
-   * Display a single category.
-   * GET categories/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
-  }
+    if(validation.fails()){
+      return {
+        message: "error",
+        data: validation.messages()
+      }
+    }
 
-  /**
-   * Render a form to update an existing category.
-   * GET categories/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
+    const category = await Category.create(request.all())
 
-  /**
-   * Update category details.
-   * PUT or PATCH categories/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
+    return {
+      message: "success",
+      data: category
+    }
   }
-
-  /**
-   * Delete a category with id.
-   * DELETE categories/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
-  }
+ 
 }
 
 module.exports = CategoryController
